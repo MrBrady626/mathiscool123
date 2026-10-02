@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ULTRA GAME STASH</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #08080d;
+      color: white;
+      min-height: 100vh;
+    }
+
+    /* ================= NAVBAR ================= */
+
+    nav {
+      height: 75px;
+      padding: 0 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      background: rgba(8, 8, 13, 0.92);
+      border-bottom: 1px solid #242431;
+
+      position: sticky;
+      top: 0;
+      z-index: 100;
+
+      backdrop-filter: blur(15px);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .logo span {
+      color: #7c4dff;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #aaa;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    .search {
+      background: #13131c;
+      border: 1px solid #292936;
+      color: white;
+
+      padding: 11px 15px;
+      width: 190px;
+
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: #7c4dff;
+    }
+
+    /* ================= HERO ================= */
+
+    .hero {
+      min-height: 530px;
+      padding: 80px 7%;
+
+      display: flex;
+      align-items: center;
+
+      position: relative;
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 80% 40%,
+          rgba(124, 77, 255, 0.25),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at 20% 20%,
+          rgba(0, 229, 255, 0.12),
+          transparent 30%
+        );
+    }
+
+    .hero-content {
+      max-width: 650px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge {
+      display: inline-block;
+
+      padding: 8px 13px;
+      border-radius: 30px;
+
+      background: rgba(124, 77, 255, 0.15);
+      border: 1px solid rgba(124, 77, 255, 0.35);
+
+      color: #a98cff;
+
+      font-size: 13px;
+      font-weight: bold;
+
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(50px, 7vw, 85px);
+      line-height: 0.95;
+      letter-spacing: -5px;
+
+      margin-bottom: 25px;
+    }
+
+    .hero h1 span {
+      color: #7c4dff;
+
+      text-shadow:
+        0 0 20px rgba(124, 77, 255, 0.7);
+    }
+
+    .hero p {
+      color: #a5a5b1;
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 560px;
+      margin-bottom: 30px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+      border-radius: 10px;
+      padding: 14px 21px;
+      font-size: 15px;
+    }
+
+    .play-btn {
+      color: white;
+
+      background: linear-gradient(
+        135deg,
+        #7c4dff,
+        #a855f7
+      );
+
+      box-shadow:
+        0 0 25px rgba(124, 77, 255, 0.35);
+
+      transition: 0.2s;
+    }
+
+    .play-btn:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 0 35px rgba(124, 77, 255, 0.55);
+    }
+
+    .browse-btn {
+      background: #171720;
+      color: white;
+      border: 1px solid #30303d;
+    }
+
+    /* HERO GAME */
+
+    .hero-game {
+      position: absolute;
+      right: 7%;
+      width: 390px;
+      height: 420px;
+
+      border-radius: 30px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(124,77,255,.8),
+          rgba(20,20,35,.8)
+        );
+
+      border: 1px solid #49368f;
+
+      transform: rotate(4deg);
+
+      box-shadow:
+        0 30px 80px rgba(0,0,0,.6),
+        0 0 70px rgba(124,77,255,.18);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 100px;
+    }
+
+    /* ================= SECTION ================= */
+
+    .section {
+      padding: 65px 7%;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin-bottom: 25px;
+    }
+
+    .section-heading h2 {
+      font-size: 32px;
+    }
+
+    .section-heading p {
+      color: #777;
+      margin-top: 6px;
+    }
+
+    .view-all {
+      color: #9878ff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* ================= GAMES ================= */
+
+    .games {
+      display: grid;
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+      gap: 18px;
+    }
+
+    .game-card {
+      background: #111119;
+      border: 1px solid #242430;
+
+      border-radius: 16px;
+      overflow: hidden;
+
+      transition: 0.25s;
+      cursor: pointer;
+    }
+
+    .game-card:hover {
+      transform: translateY(-7px);
+
+      border-color: #6844d6;
+
+      box-shadow:
+        0 15px 40px rgba(0,0,0,.4),
+        0 0 20px rgba(124,77,255,.12);
+    }
+
+    .game-image {
+      height: 190px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 65px;
+
+      position: relative;
+    }
+
+    .game-image.one {
+      background:
+        linear-gradient(135deg,#35177e,#12121c);
+    }
+
+    .game-image.two {
+      background:
+        linear-gradient(135deg,#075e68,#10151c);
+    }
+
+    .game-image.three {
+      background:
+        linear-gradient(135deg,#8b2c37,#18121a);
+    }
+
+    .game-image.four {
+      background:
+        linear-gradient(135deg,#b05a18,#171313);
+    }
+
+    .game-info {
+      padding: 17px;
+    }
+
+    .game-info h3 {
+      margin-bottom: 7px;
+    }
+
+    .game-info p {
+      color: #777;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    .game-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #92929d;
+      font-size: 12px;
+    }
+
+    .rating {
+      color: #ffc857;
+    }
+
+    /* ================= CATEGORIES ================= */
+
+    .categories {
+      display: grid;
+      grid-template-columns:
+        repeat(5, 1fr);
+
+      gap: 15px;
+    }
+
+    .category {
+      padding: 25px 15px;
+
+      text-align: center;
+
+      background: #111119;
+      border: 1px solid #242430;
+
+      border-radius: 14px;
+
+      transition: .2s;
+      cursor: pointer;
+    }
+
+    .category:hover {
+      border-color: #7c4dff;
+      background: #151522;
+    }
+
+    .category-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .category p {
+      color: #777;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    /* ================= CTA ================= */
+
+    .cta {
+      margin: 30px 7% 80px;
+
+      padding: 60px 30px;
+
+      text-align: center;
+
+      border-radius: 25px;
+
+      background:
+        radial-gradient(
+          circle,
+          #372478,
+          #151020
+        );
+
+      border: 1px solid #49368f;
+    }
+
+    .cta h2 {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .cta p {
+      color: #aaa;
+      margin-bottom: 25px;
+    }
+
+    /* ================= FOOTER ================= */
+
+    footer {
+      padding: 35px 7%;
+
+      border-top: 1px solid #22222c;
+
+      display: flex;
+      justify-content: space-between;
+
+      color: #777;
+    }
+
+    footer strong {
+      color: white;
+    }
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 1000px) {
+
+      .games {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .categories {
+        grid-template-columns:
+          repeat(3, 1fr);
+      }
+
+      .hero-game {
+        opacity: .2;
+      }
+    }
+
+    @media (max-width: 650px) {
+
+      nav {
+        padding: 0 5%;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .search {
+        width: 130px;
+      }
+
+      .hero {
+        padding: 70px 6%;
+      }
+
+      .hero h1 {
+        font-size: 55px;
+      }
+
+      .hero-game {
+        display: none;
+      }
+
+      .games {
+        grid-template-columns: 1fr;
+      }
+
+      .categories {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .section {
+        padding: 50px 6%;
+      }
+
+      footer {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+
+  <nav>
+
+    <div class="logo">
+      ULTRA <span>GAME STASH</span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#games">Games</a></li>
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="#">Leaderboard</a></li>
+    </ul>
+
+    <input
+      class="search"
+      id="search"
+      type="text"
+      placeholder="🔎 Search games..."
+    >
+
+  </nav>
+
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <div class="badge">
+        🔥 THE ULTIMATE GAME HUB
+      </div>
+
+      <h1>
+        YOUR GAMES.<br>
+        YOUR <span>STASH.</span>
+      </h1>
+
+      <p>
+        Discover awesome games, find hidden gems,
+        compete with friends, and build your ultimate
+        game collection.
+      </p>
+
+      <div class="hero-buttons">
+
+        <button
+          class="play-btn"
+          onclick="scrollToGames()"
+        >
+          🎮 Explore Games
+        </button>
+
+        <button
+          class="browse-btn"
+          onclick="scrollToCategories()"
+        >
+          Browse Categories
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="hero-game">
+      🎮
+    </div>
+
+  </section>
+
+
+  <!-- TRENDING -->
+
+  <section class="section" id="games">
+
+    <div class="section-heading">
+
+      <div>
+        <h2>🔥 Trending Games</h2>
+        <p>What everyone's playing right now.</p>
+      </div>
+
+      <div class="view-all">
+        View all →
+      </div>
+
+    </div>
+
+
+    <div class="games" id="gameGrid">
+
+      <div class="game-card" data-name="Neon Runner">
+
+        <div class="game-image one">
+          🏃
+        </div>
+
+        <div class="game-info">
+
+          <h3>Neon Runner</h3>
+
+          <p>
+            Run. Dodge. Survive.
+          </p>
+
+          <div class="game-meta">
+            <span>⚡ Action</span>
+            <span class="rating">★ 4.9</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="game-card" data-name="Cyber Strike">
+
+        <div class="game-image two">
+          🤖
+        </div>
+
+        <div class="game-info">
+
+          <h3>Cyber Strike</h3>
+
+          <p>
+            Enter the digital battlefield.
+          </p>
+
+          <div class="game-meta">
+            <span>🔫 Shooter</span>
+            <span class="rating">★ 4.8</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="game-card" data-name="Dungeon Quest">
+
+        <div class="game-image three">
+          🧙
+        </div>
+
+        <div class="game-info">
+
+          <h3>Dungeon Quest</h3>
+
+          <p>
+            Explore. Fight. Find treasure.
+          </p>
+
+          <div class="game-meta">
+            <span>⚔️ RPG</span>
+            <span class="rating">★ 4.7</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="game-card" data-name="Turbo Kart">
+
+        <div class="game-image four">
+          🏎️
+        </div>
+
+        <div class="game-info">
+
+          <h3>Turbo Kart</h3>
+
+          <p>
+            Race your way to the top.
+          </p>
+
+          <div class="game-meta">
+            <span>🏁 Racing</span>
+            <span class="rating">★ 4.6</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CATEGORIES -->
+
+  <section
+    class="section"
+    id="categories"
+  >
+
+    <div class="section-heading">
+
+      <div>
+        <h2>🎮 Browse Categories</h2>
+        <p>Find your next favorite game.</p>
+      </div>
+
+    </div>
+
+
+    <div class="categories">
+
+      <div class="category">
+        <div class="category-icon">⚔️</div>
+        <strong>Action</strong>
+        <p>Fast & intense</p>
+      </div>
+
+      <div class="category">
+        <div class="category-icon">🧙</div>
+        <strong>RPG</strong>
+        <p>Epic adventures</p>
+      </div>
+
+      <div class="category">
+        <div class="category-icon">🏎️</div>
+        <strong>Racing</strong>
+        <p>Full speed</p>
+      </div>
+
+      <div class="category">
+        <div class="category-icon">🧩</div>
+        <strong>Puzzle</strong>
+        <p>Test your brain</p>
+      </div>
+
+      <div class="category">
+        <div class="category-icon">🏀</div>
+        <strong>Sports</strong>
+        <p>Compete & win</p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CTA -->
+
+  <section class="cta">
+
+    <h2>Ready to enter the stash?</h2>
+
+    <p>
+      Your next favorite game is waiting.
+    </p>
+
+    <button
+      class="play-btn"
+      onclick="scrollToGames()"
+    >
+      ENTER ULTRA GAME STASH →
+    </button>
+
+  </section>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <div>
+      <strong>ULTRA GAME STASH</strong>
+      <br>
+      <span>The ultimate gaming stash.</span>
+    </div>
+
+    <div>
+      © 2026 Ultra Game Stash
+    </div>
+
+  </footer>
+
+
+  <script>
+
+    function scrollToGames() {
+      document
+        .getElementById("games")
+        .scrollIntoView({
+          behavior: "smooth"
+        });
+    }
+
+    function scrollToCategories() {
+      document
+        .getElementById("categories")
+        .scrollIntoView({
+          behavior: "smooth"
+        });
+    }
+
+
+    /* SEARCH */
+
+    const search = document.getElementById("search");
+    const cards = document.querySelectorAll(".game-card");
+
+    search.addEventListener("input", function () {
+
+      const query =
+        search.value.toLowerCase();
+
+      cards.forEach(card => {
+
+        const name =
+          card.dataset.name.toLowerCase();
+
+        if (name.includes(query)) {
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+
+      });
+
+    });
+
+  </script>
+
+</body>
+</html>
