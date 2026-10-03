@@ -149,6 +149,13 @@ background:linear-gradient(135deg,hsl(var(--h),95%,58%),hsl(calc(var(--h) + 55),
 .ugsdlg p{margin:0 0 16px}
 .ugsdlg .row2{display:flex;gap:10px;justify-content:flex-end}
 .adminhead{margin:34px 0 10px;font-size:1.2rem}
+.playdlg{border:1px solid var(--accent);border-radius:16px;background:var(--bg);color:var(--ink);padding:12px;width:min(96vw,1100px);height:min(92vh,780px);box-shadow:0 0 50px rgba(0,229,255,.4);font-family:inherit}
+.playdlg[open]{display:flex;flex-direction:column;gap:10px}
+.playdlg::backdrop{background:rgba(3,0,10,.85)}
+.playdlg .pbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.playdlg .pbar h3{margin:0;font-size:1.1rem}
+.playdlg .pbar small{color:var(--mute);flex:1;min-width:120px}
+.playdlg iframe{flex:1;width:100%;border:0;border-radius:10px;background:#000}
 </style>
 </head>
 <body>
@@ -232,11 +239,27 @@ const channels=[
 const EMOJI=['😀','😂','😍','😎','🤔','😭','😡','🥳','👍','👎','👏','🙏','🔥','💯','❤️','💙','🎮','🕹️','🏆','⭐','🚀','👀','🎉','😴'];
 const REACT=['👍','❤️','😂','🔥'];
 
-const games=[]; // add games here, e.g. {name:'Snake',icon:'🐍',url:'snake.html'}
+const games=[
+  {name:'Drive Mad',icon:'🚗',src:'games/drive-mad.html',credit:'Used with permission'}
+]; // add more: {name:'Snake',icon:'🐍',src:'games/snake.html',credit:'by you'}
+function playGame(g){
+  const d=document.createElement('dialog'); d.className='playdlg';
+  const bar=document.createElement('div'); bar.className='pbar';
+  const h=document.createElement('h3'); h.textContent=(g.icon||'🎮')+' '+g.name;
+  const c=document.createElement('small'); c.textContent=g.credit||'';
+  const fs=document.createElement('button'); fs.className='ghost'; fs.textContent='Fullscreen';
+  const x=document.createElement('button'); x.className='x'; x.textContent='Close';
+  const f=document.createElement('iframe'); f.src=g.src; f.title=g.name; f.allow='fullscreen; autoplay; gamepad'; f.setAttribute('allowfullscreen','');
+  fs.onclick=()=>{ try{ f.requestFullscreen(); }catch(e){} };
+  const close=()=>{ f.src='about:blank'; d.close(); d.remove(); };
+  x.onclick=close; d.addEventListener('cancel',e=>{ e.preventDefault(); close(); });
+  bar.append(h,c,fs,x); d.append(bar,f); document.body.appendChild(d); d.showModal(); setTimeout(()=>{ try{ f.focus(); }catch(e){} },300);
+}
 const gameHTML=games.length
-  ? '<div class="mosaic" style="padding:0">'+games.map((g,i)=>`<a class="t ${i%7===0?'t2':''}" style="--h:${(i*47+180)%360}" href="${g.url||'#'}">${g.icon||'🎮'}<b>${g.name}</b></a>`).join('')+'</div>'
+  ? '<div class="mosaic" style="padding:0">'+games.map((g,i)=>`<button class="t ${i%7===0?'t2':''}" style="--h:${(i*47+180)%360}" data-g="${i}">${g.icon||'🎮'}<b>${g.name}</b></button>`).join('')+'</div>'
   : '<div class="nogames"><div class="big">🎮</div><h2>No games yet</h2><p>Check back soon. New games will show up here.</p></div>';
 $('#gamelist').innerHTML=gameHTML;
+document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>playGame(games[+b.dataset.g]));
 
 function ui(msg,ask){ return new Promise(res=>{
   const d=document.createElement('dialog'); d.className='ugsdlg';
@@ -389,16 +412,16 @@ window.addEventListener('storage',e=>{ if(e.key&&e.key.startsWith('ugs:chat:')) 
   const EM=['🎮','🕹️','👾','🚀','🏆','⚡','🔥','💎','🎲','🧩','👑','🌟','🎯','🛡️','🐉','🎧','💥','🧠','🏁','🦄','🌈','🎸','🤖','🪐'];
   const HUE=[180,190,300,320,270,90,50,210,340,160];
   const logo=document.createElement('div'); logo.className='logo-t';
-  logo.innerHTML='<span>ULTRA<br>GAME STASH</span><div class="ic"><button data-go="home" aria-label="Home">🏠</button><button data-go="chat" aria-label="Chat">💬</button></div>';
+  logo.innerHTML='<span>ULTRA<br>GAME STASH</span><div class="ic"><button data-go="home" aria-label="Home">🏠</button><button data-go="chat" aria-label="Chat">💬</button><button data-go="games" aria-label="Games page">🎮</button></div>';
   m.appendChild(logo);
-  const feats={2:['chat','💬','Chat',3,185],9:['games','🎮','Games',2,300],20:['announce','📣','News',2,50],34:['staff','👥','Staff',2,325]};
+  const feats={2:['chat','💬','Chat',3,185],9:['game:0','🚗','Drive Mad',2,300],20:['announce','📣','News',2,50],34:['staff','👥','Staff',2,325]};
   for(let i=0;i<70;i++){
     const f=feats[i], t=document.createElement(f?'button':'div');
     if(f){ t.className='t t'+f[3]; t.style.setProperty('--h',f[4]); t.dataset.go=f[0]; t.innerHTML=f[1]+'<b>'+f[2]+'</b>'; }
     else { t.className='t deco'+(rnd()<.12?' t2':''); t.style.setProperty('--h',HUE[Math.floor(rnd()*HUE.length)]); t.setAttribute('aria-hidden','true'); t.textContent=EM[Math.floor(rnd()*EM.length)]; }
     m.appendChild(t);
   }
-  m.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+  m.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const g=b.dataset.go; if(g.startsWith('game:')) playGame(games[+g.slice(5)]); else show(g); });
 })();
 
 updateMe();
